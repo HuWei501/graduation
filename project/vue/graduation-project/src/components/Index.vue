@@ -11,8 +11,8 @@
             <a href="javascript:;" class="nav-link" v-on:click="activeList.two = !activeList.two">统一培训</a>
             <transition name="fade">
               <ul class="sub-nav" v-show="activeList.two">
-                <li class="sub"><router-link to="/index/train/mytrain" active-class="active">我的培训</router-link></li>
                 <li class="sub"><router-link to="/index/train/trainapply" active-class="active">培训报名</router-link></li>
+                <li class="sub"><router-link to="/index/train/mytrain" active-class="active">我的培训</router-link></li>
               </ul>
             </transition>
           </li>
@@ -21,8 +21,8 @@
             <a href="javascript:;" class="nav-link" v-on:click="activeList.three = !activeList.three">自主学习</a>
             <transition name="fade">
               <ul class="sub-nav" v-show="activeList.three">
-                <li class="sub"><router-link to="/index/study/applyforlearn" active-class="active">学习申请</router-link></li>
-                <li class="sub"><router-link to="/index/study/learnsummarize" active-class="active">学习总览</router-link></li>
+                <li class="sub"><router-link to="/index/study/applyforlearn" active-class="active">课程列表</router-link></li>
+                <li class="sub"><router-link to="/index/study/learnsummarize" active-class="active">我的课程</router-link></li>
               </ul>
             </transition>
           </li>
@@ -74,7 +74,7 @@ export default {
   overflow: hidden;
 }
 header{
-  height: 100px;
+  height: 80px;
   width: 100%;
   background-color: #75B3E8;
   display: flex;
@@ -83,15 +83,15 @@ header{
 }
 header h2{
   display: inline-block;
-  height: 100px;
-  line-height: 100px;
+  height: 80px;
+  line-height: 80px;
   margin-left: 30px;
   color: #fff;
 }
 header .btn-danger{
   height: 40px;
-  width: 100px;
-  margin:30px 30px 0 0;
+  width: 80px;
+  margin:20px 30px 0 0;
 }
 .container-box{
   height: 100%;
@@ -139,7 +139,7 @@ header .btn-danger{
   transition: all .3s ease;
 }
 .fade-leave-active {
-  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
 }
 .fade-enter, .fade-leave-active {
   transform: translateY(-10px);

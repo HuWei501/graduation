@@ -5,10 +5,10 @@
       <h5>登 录</h5>
       <form id="login-form"> 
         <p>帐号</p>
-        <input type="text" name="username" v-model="username">
+        <input type="text" name="username" v-model="username" v-on:keyup.13="login">
         <p class="input-reminder">请输入用户名</p>
         <p>密码</p>
-        <input type="password" name="password" v-model="password">
+        <input type="password" name="password" v-model="password" v-on:keyup.13="login">
         <p class="input-reminder">请输入密码</p>
         <a class="btn btn-primary" v-on:click="login">登 录</a>
       </form>
@@ -29,7 +29,7 @@ export default {
     login: function (event) {
       if (this.username && this.password) {
         console.log([this.username, this.password])
-        window.location.href = '/index/train/mytrain'
+        window.location.href = '/index/train/trainapply'
       } else {
         alert('帐号或密码不能为空')
       }
