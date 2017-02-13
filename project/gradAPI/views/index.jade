@@ -1,8 +1,65 @@
 extends layout
 
 block content
-  input.account(type='text')
-  input.password(type='password')
-  button#btn-login 登录
+  div.login_box
+    h3 登录框
+    label 用户名
+    input.account(type='text')
+    label 密码
+    input.password(type='password')
+    button#btn-login 登录
+  div.newuser_box
+    h3 添加新用户
+    label 用户名
+    input#account(type='text')
+    label 姓名
+    input#username(type='text')
+    label 性别
+    select.sex_select
+      option(value='1') 男
+      option(value='0') 女
+    label 电话
+    input#telephone(type='text')
+    label 职位
+    input#position(type='text')
+    label 入职日期
+    input#workdate(type='date')
+    button#btn-newuser 添加
+  div.change_box
+    h3 修改用户信息
+    label 用户名
+    input.account(type='text',disabled)
+    label 姓名
+    input.username(type='text')
+    label 性别
+    select.sex_select
+      option(value='1') 男
+      option(value='0') 女
+    label 电话
+    input.telephone(type='text')
+    label 职位
+    input.position(type='text')
+    label 入职日期
+    input.workdate(type='date')
+    button#btn-change 修改
+    button#btn-resetpwd 重置密码
+    button#btn-delete 删除员工
+  div.newcourse_box
+    h3 新增培训课程
+    label 课程名称
+    input.coursename(type='text')
+    label 学时
+    input.period(type='text')
+    label 开始时间
+    input.begintime(type='date')
+    label 结束时间
+    input.endtime(type='date')
+    label 教室
+    input.classroom(type='text')
+    label 老师
+    input.teacher(type='text')
+    label 上课时间
+    input.time(type='text')
+    button#btn-newCourse 添加课程
   script(src='http://libs.baidu.com/jquery/2.0.0/jquery.min.js')
   script(src='./javascripts/index.js')
