@@ -32,7 +32,7 @@
             <transition name="fade"> 
               <ul class="sub-nav" v-show="activeList.one">
                 <li class="sub"><router-link to="/index/personal/message" active-class="active">个人信息</router-link></li>
-                <li class="sub"><router-link to="/index/personal/studycourse" active-class="active">学习历程</router-link></li>
+<!--                 <li class="sub"><router-link to="/index/personal/studycourse" active-class="active">学习历程</router-link></li> -->
                 <li class="sub"><router-link to="/index/personal/alterpassword" active-class="active">修改密码</router-link></li>
               </ul>
             </transition>

@@ -5,7 +5,7 @@
       <h5>登 录</h5>
       <form id="login-form"> 
         <p>帐号</p>
-        <input type="text" name="username" v-model="username" v-on:keyup.13="login">
+        <input type="text" name="username" v-model.trim="username" v-on:keyup.13="login">
         <p class="input-reminder">请输入用户名</p>
         <p>密码</p>
         <input type="password" name="password" v-model="password" v-on:keyup.13="login">

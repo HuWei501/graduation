@@ -3,9 +3,9 @@
   	<div class="select-box">
   		<p>课程状态</p>
 	    <select v-model="classState" class="stateSelect">
-	    	<option value ="learning">进行中</option>
-			<option value ="applying">已报名</option>
-			<option value="end">已结束</option>
+        <option value ="learning">进行中</option>
+		    <option value ="applying">已报名</option>
+		    <option value="end">已结束</option>
 	    </select>
   	</div>
     <table class="table table-bordered">

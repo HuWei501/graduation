@@ -19,12 +19,12 @@ const router = new Router({
   base: __dirname,
   routes: [
     { path: '/', name: 'Hello', component: Hello },
+    { path: '/pdf', name: 'MyTrain', component: StudyCourse },
     { path: '/index',
       name: 'Index',
       component: Index,
       children: [
       { path: 'personal/message', component: Personal },
-      { path: 'personal/studycourse', component: StudyCourse },
       { path: 'personal/alterpassword', component: AlterPassword },
       { path: 'train/mytrain', component: MyTrain },
       { path: 'train/trainapply', component: TrainApply },

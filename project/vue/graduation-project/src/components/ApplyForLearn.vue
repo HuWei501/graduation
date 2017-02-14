@@ -8,7 +8,7 @@
   	</div>
 	<div class="tab-content">
 		<div class="course-wrap" v-for="item in dataList">
-			<a v-on:click="onClick(item.id)">
+			<router-link v-bind:to="'/pdf?page='+item.page+'&name='+item.pdfname">
 				<div class="course-box">
 					<img src="../assets/cousebackgournd.jpg">
 					<div class="course-intro">
@@ -20,7 +20,7 @@
 						<p class="continue" v-if="item.state">继续学习</p>
 					</div>
 				</div>
-			</a>
+			</router-link>
 		</div>
 	</div>
   </div>
@@ -43,9 +43,6 @@ export default {
       for (let i = 1; i <= 2; i++) {
         i === j ? this.select[i] = true : this.select[i] = false
       }
-    },
-    onClick: function (id) {
-      console.log(id)
     }
   }
 }
@@ -57,7 +54,9 @@ var data = [
     title: 'WEB前端',
     introduction: '前端是一门新技术',
     learnNumber: '123',
-    state: false
+    state: false,
+    page: 1,
+    pdfname: '12.pdf'
   },
   {
     id: 2,
@@ -65,7 +64,9 @@ var data = [
     title: 'JAVA进阶',
     introduction: '该资料主要讲解了JAVA的一些进阶内容',
     learnNumber: '99',
-    state: true
+    state: true,
+    page: 4,
+    pdfname: '11.pdf'
   }
 ]
 </script>
