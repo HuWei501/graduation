@@ -122,25 +122,25 @@ var trainMes3 = [
 
 <style scoped>
 #myTrain .select-box{
-	margin:60px;
+	margin:40px 60px;
 }
 #myTrain .select-box>p{
 	display: inline-block;
 	margin-right: 15px;
 }
 #myTrain .stateSelect{
-    width: 150px;
-    height: 40px;
-    font-size: 16px;
-    font-family: 'Microsoft YaHei';
-    padding-left: 10px;
-    border-radius: 5px;
+  width: 135px;
+  height: 35px;
+  font-size: 16px;
+  font-family: 'Microsoft YaHei';
+  padding-left: 10px;
+  border-radius: 5px;
 }
 #myTrain .table{
 	margin:0 60px;
 	width: 90%;
 }
-#myTrain .table th:nth-child(2),
+/*#myTrain .table th:nth-child(2),
 #myTrain .table th:nth-child(4){
 	width: 280px;
 }
@@ -152,7 +152,7 @@ var trainMes3 = [
 #myTrain .table th:nth-child(7),
 #myTrain .table th:nth-child(8){
 	width: 180px;
-}
+}*/
 #myTrain .table th,
 #myTrain .table td{
 	padding-left: 15px;

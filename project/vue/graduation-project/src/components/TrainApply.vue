@@ -1,24 +1,24 @@
 <template>
   <div id="trainApply">
     <table class="table table-bordered">
-    	<thead>
-	    	<tr>
-	        	<th>课程编号</th>
-				<th>课程</th>
-				<th>学时</th>
-				<th>上课时间</th>
-				<th>地点</th>
-				<th>老师</th>
-				<th>课程开始时间</th>
-				<th>操作</th>
-	    	</tr>
-    	</thead>
-    	<tbody>
-			<tr v-for="item in applyCourse">
-				<td v-for="object in item">{{object}}</td>
-				<td><a class="btn btn-info" v-on:click="signup(item.id)">报名</a></td>
-			</tr>
-    	</tbody>
+      <thead>
+        <tr>
+          <th>课程编号</th>
+          <th>课程</th>
+          <th>学时</th>
+          <th>上课时间</th>
+          <th>地点</th>
+          <th>老师</th>
+          <th>课程开始时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in applyCourse">
+          <td v-for="object in item">{{object}}</td>
+          <td><a class="btn btn-info" v-on:click="signup(item.id)">报名</a></td>
+        </tr>
+      </tbody>
     </table>
   </div>
 </template>
@@ -73,6 +73,9 @@ var trainMes1 = [
 }
 #trainApply .table th:last-child{
 	width: 150px;
+}
+#trainApply .table td{
+  line-height: 31px;
 }
 #trainApply .table th:last-child,
 #trainApply .table td:last-child{
