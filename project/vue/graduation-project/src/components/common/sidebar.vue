@@ -38,6 +38,9 @@ export default {
   height: 100%;
   box-shadow: 2px 0 6px #eee;
   padding-top: 10px;
+  position: fixed;
+  left: 0;
+  top: 70px;
 }
 .sidebar .active{
   background-color: #75B3E8 !important;

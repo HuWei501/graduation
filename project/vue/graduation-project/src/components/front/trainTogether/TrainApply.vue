@@ -1,6 +1,6 @@
 <template>
   <div id="trainApply">
-    <table class="table table-bordered">
+    <table class="table table-bordered table-hover">
       <thead>
         <tr>
           <th>课程编号</th>

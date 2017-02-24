@@ -8,7 +8,7 @@
 		    <option value="end">已结束</option>
 	    </select>
   	</div>
-    <table class="table table-bordered">
+    <table class="table table-bordered table-hover">
     	<thead>
     		<tr>
           <th>课程编号</th>
@@ -27,6 +27,7 @@
     		</tr>
     	</tbody>
     </table>
+    <slot></slot>
   </div>
 </template>
 
@@ -139,6 +140,10 @@ var trainMes3 = [
 #myTrain .table{
 	margin:0 60px;
 	width: 90%;
+}
+.btn{
+  margin: 30px 60px;
+  width: 150px;
 }
 /*#myTrain .table th:nth-child(2),
 #myTrain .table th:nth-child(4){

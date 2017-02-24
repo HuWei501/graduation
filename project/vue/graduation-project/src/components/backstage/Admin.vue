@@ -78,11 +78,10 @@ export default {
 <style scoped>
 #main{
   height: 100%;
-  overflow: hidden;
 }
 .container-box{
-  height: 100%;
   text-align: left;
+  padding: 70px 0 0 180px;
 }
 .context {
   width: 85%;

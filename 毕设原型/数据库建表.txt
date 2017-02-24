@@ -1,0 +1,189 @@
+新建用户表 g_user
+
+CREATE TABLE `graduation`.`g_user` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '唯一识别id',
+  `account` VARCHAR(15) NULL COMMENT '用户帐号--唯一',
+  `password` VARCHAR(20) NULL DEFAULT '123456' COMMENT '密码',
+  `name` VARCHAR(10) NULL COMMENT '用户姓名',
+  `sex` INT NULL COMMENT '性别  1男   0女',
+  `tel` VARCHAR(15) NULL COMMENT '电话',
+  `position` INT NULL COMMENT '职位id---与职位表对应',
+  `workdate` DATE NULL COMMENT '参加工作日期',
+  `borthdate` DATE NULL COMMENT '出生日期',
+  `politics` VARCHAR(10) NULL COMMENT '政治面貌',
+  `education` VARCHAR(10) NULL COMMENT '学历',
+  `father` VARCHAR(10) NULL COMMENT '父亲',
+  `mother` VARCHAR(10) NULL COMMENT '母亲',
+  `adress` VARCHAR(45) NULL COMMENT '家庭地址',
+  `zipcode` INT NULL COMMENT '邮编',
+  `nation` VARCHAR(10) NULL COMMENT '民族',
+  `school` VARCHAR(20) NULL COMMENT '学校',
+  `identity` VARCHAR(30) NULL COMMENT '身份证',
+  `email` VARCHAR(20) NULL COMMENT '邮箱',
+  `native` VARCHAR(15) NULL COMMENT '籍贯',
+  `type` INT NULL DEFAULT '1' COMMENT '用户类别区分   0--管理员  1--普遍用户' ,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `account_UNIQUE` (`account` ASC))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+新建用户
+insert into g_user (account, name, sex, tel, position, workdate, borthdate, politics, education, father, mother, adress, zipcode, nation, school, identity, email, native, type) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+
+修改用户信息
+update g_user set name=?, sex=?, tel=?, position=?, workdate=?,borthdate=?, politics=?, education=?, father=?, mother=?, adress=?, zipcode=?, nation=?, school=?, identity=?, email=?, native=? where id=?
+
+重置密码
+update g_user set password=123456 where id=?
+
+修改密码
+update g_user set password=? where id=?
+
+删除员工
+delete from g_user where id=?
+
+获取用户信息
+select g_user.*,g_position.name as pname from g_user,g_position where g_position.id = g_user.position and g_user.account = ?
+
+
+创建职位表   g_position
+
+CREATE TABLE `graduation`.`g_position` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '职位唯一id',
+  `name` VARCHAR(10) NULL COMMENT '职位名称',
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COMMENT = '职位表';
+
+
+添加新职位
+insert into g_position (name) values (?)
+
+删除职位
+delete from g_position where id=?
+
+
+创建培训课程信息表  g_course
+
+CREATE TABLE `graduation`.`g_course` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '课程id',
+  `name` VARCHAR(25) NULL COMMENT '课程名称',
+  `period` INT NULL COMMENT '学时',
+  `startdate` DATE NULL COMMENT '开课日期',
+  `enddate` DATE NULL COMMENT '结束日期',
+  `classroom` VARCHAR(20) NULL COMMENT '教室',
+  `teacher` VARCHAR(10) NULL COMMENT '老师',
+  `schooltime` VARCHAR(20) NULL COMMENT '上课时间',
+  `limit` INT NULL COMMENT '名额',
+  `nowperson` INT NULL DEFAULT '0' COMMENT '当前报名人数',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COMMENT = '培训课程信息表';
+
+
+创建新培训课程
+insert into g_course (name, period, startdate, enddate, classroom, teacher, schooltime, limit) values (?, ?, ?, ?, ?, ?, ?, ?)
+
+修改培训课程
+update g_course set name=?, period=?, startdate=?, enddate=?, classroom=?, teacher=?, schooltime=?, limit=? where id=?
+
+删除培训课程
+delete from g_course where id=?
+
+
+创建员工培训表 g_user_course
+
+CREATE TABLE `graduation`.`g_user_course` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '员工培训表唯一id',
+  `userid` INT NULL COMMENT '员工id',
+  `courseid` INT NULL COMMENT '课程id',
+  `grade` INT NULL COMMENT '成绩',
+  PRIMARY KEY (`id`))
+COMMENT = '员工培训表';
+
+触发器  add_nowperson   向员工报名的同时更新相应课程的报名人数nowperson  并实现当报名人数已经达到上限时，添加报错
+
+DELIMITER $
+create trigger add_nowperson before insert
+on g_user_course for each row
+begin
+declare c,s int;
+set c = (select nowperson from g_course where id= new.courseid);
+set s = (select g_course.limit from g_course where id = new.courseid);
+if (s > c) then
+	UPDATE g_course SET nowperson = c + 1 WHERE id = new.courseid;
+else 
+	delete from g_user_course where addError = 1;
+end if;
+end$
+DELIMITER ;
+
+
+员工查询可以报名的培训课程
+select g_course.* from g_course where g_course.id not in (select courseid from g_user_course where userid = ?)
+
+员工报名
+insert into g_user_course (userid, courseid) values (?, ?)
+
+查询员工已经报名的培训
+select g_course.*,g_user_course.grade from g_course,g_user_course where g_course.id=g_user_course.courseid and g_user_course.userid = ?
+
+查询培训课程已报名的员工
+select g_user.* from g_user where g_user.id in (select userid from g_user_course where courseid = ?)
+
+
+课程资料信息表 g_coursedata
+
+CREATE TABLE `graduation`.`g_coursedata` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '资料id',
+  `title` VARCHAR(30) NULL COMMENT '资料名称',
+  `pages` INT NULL COMMENT '页数',
+  `intro` VARCHAR(200) NULL COMMENT '简介',
+  `imgurl` VARCHAR(200) NULL COMMENT '图片url',
+  `PDFurl` VARCHAR(200) NULL COMMENT 'PDF链接',
+  `learnNum` INT NULL DEFAULT 0 COMMENT '已学习人数',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COMMENT = '课程资料信息表';
+
+新建资料
+insert into g_coursedata (title, pages, intro, imgurl, PDFurl) values (?, ?, ?, ?, ?)
+
+删除资料
+delete from g_coursedata where id = ?
+
+修改资料
+update g_coursedata set title=?, intro=? where id=?
+
+
+员工学习课程资料表  g_user_data
+
+CREATE TABLE `graduation`.`g_user_data` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '唯一id',
+  `userid` INT NULL COMMENT '员工id',
+  `dataid` INT NULL COMMENT '资料id',
+  `learnedpage` INT NULL COMMENT '已学习页数',
+  `learntime` INT NULL COMMENT '花费时长',
+  `startdate` DATE NULL COMMENT '开始学习的日期',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COMMENT = '员工学习课程资料表';
+
+员工开始学习资料
+insert into g_user_data (userid, dataid, startdate) values (?, ?, ?)
+
+结束学习时保存当前页数和学习时间
+update g_user_data set learnedpage=?, learntime=? where id=?
+
+
+
+
+
+
+

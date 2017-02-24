@@ -28,7 +28,11 @@ export default {
   methods: {
     login: function (event) {
       if (this.username && this.password) {
-        window.location.href = 'index/train/trainapply'
+        if (this.username === 'admin') {
+          window.location.href = 'admin/newstaff'
+        } else {
+          window.location.href = 'index/train/trainapply'
+        }
         // this.$http.post('http://localhost:3000/user_login', {
         //   account: this.username,
         //   pwd: this.password
@@ -56,7 +60,7 @@ export default {
   background: url(../assets/loginbackground.jpg) 0 0 no-repeat;
   background-size: cover;
   width: 100%;
-  height: 915px;
+  height: 100%;
   position: relative;
 }
 .title{

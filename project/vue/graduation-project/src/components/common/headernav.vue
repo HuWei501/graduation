@@ -29,6 +29,9 @@ export default {
 header{
   height: 70px;
   width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 9;
   background-color: #75B3E8;
   display: flex;
   justify-content: space-between;
