@@ -91,6 +91,9 @@ export default {
 .table{
 	width: 90%;
 }
+input{
+	width: 155px;
+}
 .btn{
 	margin: 20px 20px 20px 0;
 	width: 150px;
