@@ -22,14 +22,21 @@
 				</tr>
 			</tbody>
 		</table>
-		<slot></slot>
+		<a class="btn btn-default" v-if="fromlist" @click="changeStaffListState(2)">返回</a>
 	</div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   data () {
     return {}
+  },
+  props: ['fromlist'],
+  methods: {
+    ...mapActions([
+      'changeStaffListState'
+    ])
   }
 }
 </script>

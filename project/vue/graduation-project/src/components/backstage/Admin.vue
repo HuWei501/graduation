@@ -1,6 +1,6 @@
 <template>
   <div id="main">
-    <header-nav :username="name"></header-nav>
+    <header-nav></header-nav>
     <div class="container-box">
       <side-bar :barmes="sideList_admin"></side-bar>
       <div class="context">
@@ -17,7 +17,6 @@ export default {
   name: 'admin',
   data () {
     return {
-      name: '管理员',
       sideList_admin: [
         {
           stairTitle: '员工管理',
@@ -71,6 +70,12 @@ export default {
   components: {
     'header-nav': headernav,
     'side-bar': sidebar
+  },
+  created () {
+    if (this.$store.state.loginMes.gtype !== 0) {
+      alert('请用管理员帐号登录')
+      this.$router.push('/')
+    }
   }
 }
 </script>

@@ -2,22 +2,22 @@
   <div id="applyforlearn">
   	<div class="tabs">
   		<ul class="tablist">
-  			<li class="is-flex" v-bind:class="{active: select[1]}" v-on:click="changeState(1)"><a><span>推荐</span></a></li
-  			><li class="is-flex" v-bind:class="{active: select[2]}" v-on:click="changeState(2)"><a><span>全部</span></a></li>
+  			<li class="is-flex" v-bind:class="{active: !selectAll}" v-on:click="changeState(false)"><a><span>推荐</span></a></li
+  			><li class="is-flex" v-bind:class="{active: selectAll}" v-on:click="changeState(true)"><a><span>全部</span></a></li>
   		</ul>
   	</div>
 	<div class="tab-content">
 		<div class="course-wrap" v-for="item in dataList">
-			<router-link v-bind:to="'/pdf?page='+item.page+'&name='+item.pdfname">
+			<router-link v-bind:to="'/pdf?dataid='+ item.gdataID + '&state=0'">
 				<div class="course-box">
-					<img src="../../../assets/cousebackgournd.jpg">
+					<img v-bind:src="'http://localhost:3000/'+item.gimgurl">
 					<div class="course-intro">
-						<h3>{{item.title}}</h3>
-						<p>{{item.introduction}}</p>
+						<h3>{{item.gtitle}}</h3>
+						<p>{{item.gintro}}</p>
 					</div>
 					<div class="course-bottom">
-						<p>{{item.learnNumber}}在学</p>
-						<p class="continue" v-if="item.state">继续学习</p>
+						<p>{{item.glearnNum}}人在学</p>
+						<p class="continue" v-if="item.gstate">继续学习</p>
 					</div>
 				</div>
 			</router-link>
@@ -27,48 +27,59 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   name: 'applyforlearn',
   data () {
     return {
-      select: {
-        1: true,
-        2: false
-      },
-      dataList: data
+      selectAll: false,
+      dataList: [],
+      userid: this.$store.state.loginMes.gid
     }
   },
   methods: {
-    changeState: function (j) {
-      for (let i = 1; i <= 2; i++) {
-        i === j ? this.select[i] = true : this.select[i] = false
+    ...mapActions([
+      'addData'
+    ]),
+    changeState: function (flag) {
+      this.selectAll = flag
+      if (this.selectAll) {
+        this.getAllDataList()
+      } else {
+        this.getRecommendDataList()
       }
+    },
+    getAllDataList () {
+      this.$http.post('http://localhost:3000/selectDataList', {guserid: this.userid})
+      .then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          this.dataList = res.data.dataList
+          this.addData(res.data.dataList)
+        }
+      }, (res) => {
+        console.log(res)
+      })
+    },
+    getRecommendDataList () {
+      this.$http.post('http://localhost:3000/recommendDataList', {
+        guserid: this.userid,
+        gpositionid: this.$store.state.loginMes.gpositionID
+      }).then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          this.dataList = res.data.dataList
+          this.addData(res.data.dataList)
+        }
+      }, (res) => {
+        console.log(res)
+      })
     }
+  },
+  created () {
+    this.getRecommendDataList()
   }
 }
-
-var data = [
-  {
-    id: 1,
-    imgurl: '../assets/cousebackgournd.jpg',
-    title: 'WEB前端',
-    introduction: '前端是一门新技术',
-    learnNumber: '123',
-    state: false,
-    page: 1,
-    pdfname: '12.pdf'
-  },
-  {
-    id: 2,
-    imgurl: '../assets/cousebackgournd.jpg',
-    title: 'JAVA进阶',
-    introduction: '该资料主要讲解了JAVA的一些进阶内容',
-    learnNumber: '99',
-    state: true,
-    page: 4,
-    pdfname: '11.pdf'
-  }
-]
 </script>
 
 <style scoped>

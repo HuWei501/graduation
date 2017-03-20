@@ -71,6 +71,12 @@ export default {
   components: {
     'header-nav': headernav,
     'side-bar': sidebar
+  },
+  created () {
+    if (this.$store.state.loginMes.gtype !== 1) {
+      alert('请先登录')
+      this.$router.push('/')
+    }
   }
 }
 </script>

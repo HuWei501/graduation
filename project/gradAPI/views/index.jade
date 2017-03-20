@@ -61,5 +61,10 @@ block content
     label 上课时间
     input.time(type='text')
     button#btn-newCourse 添加课程
+  div.upload_box
+    input(name='inputFile', type='file', id='upload')
+    button#pdfupload 上传文件
+  div.upload-container
+    input(name='imgToUpload', type='file', id='imgupload')
   script(src='http://libs.baidu.com/jquery/2.0.0/jquery.min.js')
   script(src='./javascripts/index.js')

@@ -86,10 +86,13 @@ COMMENT = '培训课程信息表';
 
 
 创建新培训课程
-insert into g_course (name, period, startdate, enddate, classroom, teacher, schooltime, limit) values (?, ?, ?, ?, ?, ?, ?, ?)
+insert into g_course (name, period, startdate, enddate, classroom, teacher, schooltime, limitperson) values (?, ?, ?, ?, ?, ?, ?, ?)
+
+查询培训课程列表
+select *, case when enddate > now() then 0 else 1 end state from g_course 
 
 修改培训课程
-update g_course set name=?, period=?, startdate=?, enddate=?, classroom=?, teacher=?, schooltime=?, limit=? where id=?
+update g_course set name=?, period=?, startdate=?, enddate=?, classroom=?, teacher=?, schooltime=?, limitperson=? where id=?
 
 删除培训课程
 delete from g_course where id=?
@@ -113,7 +116,7 @@ on g_user_course for each row
 begin
 declare c,s int;
 set c = (select nowperson from g_course where id= new.courseid);
-set s = (select g_course.limit from g_course where id = new.courseid);
+set s = (select g_course.limitperson from g_course where id = new.courseid);
 if (s > c) then
 	UPDATE g_course SET nowperson = c + 1 WHERE id = new.courseid;
 else 
@@ -124,7 +127,7 @@ DELIMITER ;
 
 
 员工查询可以报名的培训课程
-select g_course.* from g_course where g_course.id not in (select courseid from g_user_course where userid = ?)
+select g_course.* from g_course where g_course.id not in (select courseid from g_user_course where userid = ?) and g_course.startdate > ?
 
 员工报名
 insert into g_user_course (userid, courseid) values (?, ?)
@@ -133,7 +136,11 @@ insert into g_user_course (userid, courseid) values (?, ?)
 select g_course.*,g_user_course.grade from g_course,g_user_course where g_course.id=g_user_course.courseid and g_user_course.userid = ?
 
 查询培训课程已报名的员工
-select g_user.* from g_user where g_user.id in (select userid from g_user_course where courseid = ?)
+select a.*, b.grade, c.name as positionName from g_user a, g_position c left join g_user_course b on b.courseid = ? where a.id = b.userid and c.id = a.position
+
+成绩录入
+update g_user_course set grade = ? where userid = ? and courseid = ?
+
 
 
 课程资料信息表 g_coursedata
@@ -142,9 +149,9 @@ CREATE TABLE `graduation`.`g_coursedata` (
   `id` INT NOT NULL AUTO_INCREMENT COMMENT '资料id',
   `title` VARCHAR(30) NULL COMMENT '资料名称',
   `pages` INT NULL COMMENT '页数',
-  `intro` VARCHAR(200) NULL COMMENT '简介',
-  `imgurl` VARCHAR(200) NULL COMMENT '图片url',
-  `PDFurl` VARCHAR(200) NULL COMMENT 'PDF链接',
+  `intro` VARCHAR(500) NULL COMMENT '简介',
+  `imgurl` VARCHAR(300) NULL COMMENT '图片url',
+  `PDFurl` VARCHAR(300) NULL COMMENT 'PDF链接',
   `learnNum` INT NULL DEFAULT 0 COMMENT '已学习人数',
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
@@ -154,11 +161,14 @@ COMMENT = '课程资料信息表';
 新建资料
 insert into g_coursedata (title, pages, intro, imgurl, PDFurl) values (?, ?, ?, ?, ?)
 
+查询资料列表
+select * from g_coursedata
+
 删除资料
 delete from g_coursedata where id = ?
 
 修改资料
-update g_coursedata set title=?, intro=? where id=?
+update g_coursedata set title=?, intro=?, imgurl=?, PDFurl=?, pages=? where id=?
 
 
 员工学习课程资料表  g_user_data
@@ -181,9 +191,94 @@ insert into g_user_data (userid, dataid, startdate) values (?, ?, ?)
 结束学习时保存当前页数和学习时间
 update g_user_data set learnedpage=?, learntime=? where id=?
 
+查询课程资料
+select a.*,
+       case when b.userid is not null then 1 else 0 end state,
+	   case when b.userid is not null then b.learntime else 0 end learntime,
+       case when b.userid is not null then b.learnedpage else 1 end learnedpage
+from g_coursedata a
+     left join g_user_data b on a.id = b.dataid and b.userid = ?
+	 
+查询资料已学习的员工
+select a.*, b.learntime, c.name as positionName from g_user a, g_position c left join g_user_data b on b.dataid = ? where a.id = b.userid and c.id = a.position
 
 
+触发器  add_learnNum   向员工报名的同时更新相应课程的学习人数learnNum
+
+DELIMITER $
+create trigger add_learnNum before insert
+on g_user_data for each row
+begin
+declare c,s int;
+set c = (select learnNum from g_coursedata where id= new.dataid);
+UPDATE g_coursedata SET learnNum = c + 1 WHERE id = new.dataid;
+end$
+DELIMITER ;
 
 
+员工自我评价表
 
+CREATE TABLE `graduation`.`g_userassessment` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '表的唯一id',
+  `userid` INT NULL COMMENT '用户id',
+  `assessment` VARCHAR(300) NULL COMMENT '自我评价',
+  `builddate` DATE NULL COMMENT '评价日期',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COMMENT = '员工自我评价表';
+
+新增员工自我评价
+insert into g_userassessment (userid, assessment, builddate) values (?, ?, ?)
+
+
+BOSS评价表
+
+CREATE TABLE `graduation`.`g_BOSSassessment` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '表的唯一id',
+  `userid` INT NULL COMMENT '用户id',
+  `assessment` VARCHAR(300) NULL COMMENT 'BOSS评价',
+  `builddate` DATE NULL COMMENT '评价日期',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COMMENT = 'boos评价表';
+
+insert into g_bossassessment (userid, assessment, builddate) values (?, ?, ?)
+
+//查询员工评价
+['select assessment , builddate , 1 as gtype from g_userassessment where userid = ?', 'select assessment, builddate, 0 as gtype from g_bossassessment where userid = ?']
+
+
+职位推荐表
+
+CREATE TABLE `graduation`.`g_positiion_data` (
+  `positionid` INT NOT NULL COMMENT '职位id',
+  `dataid` INT NOT NULL COMMENT '资料id',
+  PRIMARY KEY (`positionid`, `dataid`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COMMENT = '职位推荐表';
+
+查询除已推荐的资料外的资料
+select a.*,
+       case when b.positionid is not null then 1 else 0 end state
+from g_coursedata a
+     left join g_positiion_data b on a.id = b.dataid and b.positionid = ?
+
+给职位添加推荐资料
+insert into g_positiion_data (positionid, dataid) values (?, ?)
+
+移除推荐资料
+delete from g_positiion_data where positionid = ? and dataid = ?
+
+查询该职位的推荐资料
+select a.*,
+       case when b.userid is not null then 1 else 0 end state,
+	   case when b.userid is not null then b.learntime else 0 end learntime,
+       case when b.userid is not null then b.learnedpage else 1 end learnedpage
+from g_coursedata a
+     left join g_user_data b on a.id = b.dataid and b.userid = ?
+ where a.id in 
+	(select dataid from g_positiion_data where positionid = ?)  
 

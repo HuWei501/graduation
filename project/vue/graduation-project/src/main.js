@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import VueResource from 'vue-resource'
+import store from './vuex/store'
 
 Vue.use(VueResource)
 
@@ -11,6 +12,7 @@ Vue.use(VueResource)
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App }
 })

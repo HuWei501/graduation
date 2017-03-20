@@ -1,10 +1,17 @@
 <template>
 	<div id="datalist">
-		<change-data v-if="showchange">
+		<change-data v-if="showchange" :fromlist="true" :changeMes="changeDataMes" v-on:changeData="changeSuccess">
 			<a class="btn btn-default" v-on:click="showchange = !showchange">返回</a>
-			<a class="btn btn-primary">修改</a>
 		</change-data>
-		<table class="table table-bordered table-hover" v-if="!showchange">
+		<delete-data v-if="deleteflag">
+			<h5>确认删除该资料？</h5>
+			<a class="btn btn-default" @click="deleteflag=!deleteflag">取消</a>
+			<a class="btn btn-danger" @click="deleteData">删除</a>
+		</delete-data>
+    <now-people v-if="nowflag" :fromdata="true" :fromCourseMes="dataMes">
+      <a class="btn btn-default" @click="nowflag=!nowflag">返回</a>
+    </now-people>
+		<table class="table table-bordered table-hover" v-if="!showchange && !nowflag">
 			<thead>
 				<tr>
 					<th>编号</th>
@@ -15,14 +22,14 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td>1</td>
-					<td>web入门</td>
-					<td>30</td>
-					<td><a href="#">50</a></td>
+				<tr v-for="item in dataList">
+					<td>{{item.gid}}</td>
+					<td>{{item.gtitle}}</td>
+					<td>{{item.gpages}}</td>
+					<td><a href="javascript:;" @click="showNowPeople(item.gid)">{{item.glearnNum}}</a></td>
 					<td>
-						<a class="btn btn-info" v-on:click="showchange = !showchange">修改</a>
-						<a class="btn btn-danger">删除</a>
+						<a class="btn btn-info" @click="showchange=!showchange;changeDataMes=item">修改</a>
+						<a class="btn btn-danger" @click="deleteflag=!deleteflag;deleteID=item.gid">删除</a>
 					</td>
 				</tr>
 			</tbody>
@@ -32,14 +39,62 @@
 
 <script>
 import changedata from './NewData'
+import deleteTrain from '../../common/deleteAlter'
+import nowpeople from '../train/NowPeople'
 export default {
   data () {
     return {
-      showchange: false
+      showchange: false,
+      dataList: [],
+      deleteflag: false,
+      deleteID: 0,
+      changeDataMes: {},
+      nowflag: false,
+      dataMes: {}
     }
   },
   components: {
-    'change-data': changedata
+    'change-data': changedata,
+    'delete-data': deleteTrain,
+    'now-people': nowpeople
+  },
+  methods: {
+    getDataList () {
+      this.$http.get('http://localhost:3000/get_allCourseData')
+      .then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          this.dataList = res.data.datalist
+        }
+      }, (res) => {
+        console.log(res)
+      })
+    },
+    deleteData () {
+      this.$http.post('http://localhost:3000/delete_courseData', {gid: this.deleteID})
+      .then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          this.deleteflag = !this.deleteflag
+          this.getDataList()
+        }
+      }, (res) => {
+        console.log(res)
+      })
+    },
+    changeSuccess () {
+      alert('修改成功')
+      this.showchange = !this.showchange
+      this.getDataList()
+    },
+    showNowPeople (dataid) {
+      this.nowflag = !this.nowflag
+      this.dataMes.dataid = dataid
+      this.dataMes.ifEnd = 0
+    }
+  },
+  created () {
+    this.getDataList()
   }
 }
 </script>

@@ -3,9 +3,9 @@
   	<div class="select-box">
   		<p>课程状态</p>
 	    <select v-model="classState" class="stateSelect">
-        <option value ="learning">进行中</option>
-		    <option value ="applying">已报名</option>
-		    <option value="end">已结束</option>
+        <option value ="2">进行中</option>
+		    <option value ="1">已报名</option>
+		    <option value="3">已结束</option>
 	    </select>
   	</div>
     <table class="table table-bordered table-hover">
@@ -19,106 +19,58 @@
     			<th>老师</th>
     			<th>课程开始时间</th>
     			<th>课程结束时间</th>
+          <th>成绩</th>
     		</tr>
     	</thead>
     	<tbody>
-    		<tr v-for="item in trainMes">
-    			<td v-for="object in item">{{object}}</td>
+    		<tr v-for="item in trainMes" v-if="item.gstate === +classState">
+    			<td>{{item.gcourseid}}</td>
+          <td>{{item.gname}}</td>
+          <td>{{item.gperiod}}</td>
+          <td>{{item.gschooltime}}</td>
+          <td>{{item.gclassroom}}</td>
+          <td>{{item.gteacher}}</td>
+          <td>{{item.gstartdate}}</td>
+          <td>{{item.genddate}}</td>
+          <td>{{item.grade === null ? '暂无' : item.grade}}</td>
     		</tr>
     	</tbody>
     </table>
-    <slot></slot>
+    <a class="btn btn-default" v-if="fromlist" @click="changeStaffListState(2)">返回</a>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   name: 'myTrain',
   data () {
     return {
-      trainMes: trainMes1,
-      classState: 'learning'
+      trainMes: [],
+      classState: 2,
+      userid: this.fuserid ? this.fuserid : this.$store.state.loginMes.gid
     }
   },
-  watch: {
-    classState: function (result) {
-      if (result === 'learning') {
-        this.trainMes = trainMes1
-      } else if (result === 'applying') {
-        this.trainMes = trainMes2
+  props: ['fromlist', 'fuserid'],
+  methods: {
+    ...mapActions([
+      'changeStaffListState'
+    ])
+  },
+  created () {
+    this.$http.post('http://localhost:3000/applyedCourse', {gid: this.userid})
+    .then((res) => {
+      console.log(res.data)
+      if (res.data.success) {
+        this.trainMes = res.data.applyedCourseList
       } else {
-        this.trainMes = trainMes3
+        alert(res.data.msg)
       }
-    }
+    }, (res) => {
+      console.log(res)
+    })
   }
 }
-
-var trainMes1 = [
-  {
-    id: 100001,
-    className: 'WEB前端',
-    period: 20,
-    time: '周三下午4点-6点',
-    adress: '求知楼102',
-    author: '小新',
-    startTime: '2016-03-04',
-    endTime: ''
-  },
-  {
-    id: 100002,
-    className: 'Java基础教学',
-    period: 25,
-    time: '周一上午10点-11点',
-    adress: '求是楼302',
-    author: '七条香蕉',
-    startTime: '2016-03-04',
-    endTime: ''
-  }
-]
-var trainMes2 = [
-  {
-    id: 100003,
-    className: 'JavaScript高级编程',
-    period: 30,
-    time: '周五下午18点-19点',
-    adress: '求新楼321',
-    author: '天才小熊猫',
-    startTime: '2016-03-04',
-    endTime: ''
-  },
-  {
-    id: 100004,
-    className: 'WEB前端',
-    period: 20,
-    time: '周三下午4点-6点',
-    adress: '求知楼102',
-    author: '小新',
-    startTime: '2016-03-04',
-    endTime: ''
-  }
-]
-var trainMes3 = [
-  {
-    id: 100005,
-    className: 'Java基础教学',
-    period: 25,
-    time: '周一上午10点-11点',
-    adress: '求是楼302',
-    author: '七条香蕉',
-    startTime: '2016-03-04',
-    endTime: '2016-05-31'
-  },
-  {
-    id: 100006,
-    className: 'JavaScript高级编程',
-    period: 30,
-    time: '周五下午18点-19点',
-    adress: '求新楼321',
-    author: '天才小熊猫',
-    startTime: '2016-03-04',
-    endTime: '2016-05-31'
-  }
-]
 </script>
 
 <style scoped>

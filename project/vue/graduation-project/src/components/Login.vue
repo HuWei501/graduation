@@ -5,18 +5,19 @@
       <h5>登 录</h5>
       <form id="login-form"> 
         <p>帐号</p>
-        <input type="text" name="username" v-model.trim="username" v-on:keyup.13="login">
+        <input type="text" name="username" v-model.trim="username" v-on:keyup.13="addPerson({account:username, pwd:password})">
         <p class="input-reminder">请输入用户名</p>
         <p>密码</p>
-        <input type="password" name="password" v-model="password" v-on:keyup.13="login">
+        <input type="password" name="password" v-model="password" v-on:keyup.13="addPerson({account:username, pwd:password})">
         <p class="input-reminder">请输入密码</p>
-        <a class="btn btn-primary" v-on:click="login">登 录</a>
+        <a class="btn btn-primary" v-on:click="addPerson({account:username, pwd:password})">登 录</a>
       </form>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   name: 'hello',
   data () {
@@ -25,32 +26,9 @@ export default {
       password: ''
     }
   },
-  methods: {
-    login: function (event) {
-      if (this.username && this.password) {
-        if (this.username === 'admin') {
-          window.location.href = 'admin/newstaff'
-        } else {
-          window.location.href = 'index/train/trainapply'
-        }
-        // this.$http.post('http://localhost:3000/user_login', {
-        //   account: this.username,
-        //   pwd: this.password
-        // }).then((response) => {
-        //   console.log(response.data)
-        //   if (response.data.success) {
-        //     // window.location.href = 'index/train/trainapply'
-        //   } else {
-        //     alert(response.data.msg)
-        //   }
-        // }, (response) => {
-        //   console.log(response)
-        // })
-      } else {
-        alert('帐号密码不能为空')
-      }
-    }
-  }
+  methods: mapActions([
+    'addPerson'
+  ])
 }
 </script>
 

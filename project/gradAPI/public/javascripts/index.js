@@ -173,5 +173,56 @@
 				alert('信息填写错误');
 			}
 		})
+
+		//上传pdf
+		$('#pdfupload').on('click', function(){
+			var formData = new FormData();
+			var name = $("#upload").val();
+			formData.append("file",$("#upload")[0].files[0]);
+			formData.append("name",name);
+			$.ajax({ 
+				url : '/pdf/uploading', 
+				type : 'POST', 
+				data : formData, 
+				// 告诉jQuery不要去处理发送的数据
+				processData : false, 
+				// 告诉jQuery不要去设置Content-Type请求头
+				contentType : false,
+				beforeSend:function(){
+					console.log("正在进行，请稍候");
+				},
+				success : function(data) { 
+					console.log(data);
+				}, 
+				error : function(responseStr) { 
+					console.log("error");
+				} 
+			});
+		})
+		//上传图片
+		$('#imgupload').on('change', function(){
+			if($('#imgupload').val().length) {
+				var fileName = $('#imgupload').val();
+				var extension = fileName.substring(fileName.lastIndexOf('.'), fileName.length).toLowerCase();
+        		if (extension == ".jpg" || extension == ".png") {
+                	var data = new FormData();
+                	data.append('image', $('#imgupload')[0].files[0]);
+	                $.ajax({
+	                    url: 'image/upload',
+	                    type: 'post',
+	                    data: data,
+	                    cache: false,
+	                    contentType: false, //不可缺参数
+	                    processData: false, //不可缺参数
+	                    success: function(data) {
+	                        console.log(data);
+	                    },
+	                    error: function() {
+	                        console.log('error');
+	                    }
+	                });
+        		}
+			}
+		})
 	});
 }(jQuery,window,document);

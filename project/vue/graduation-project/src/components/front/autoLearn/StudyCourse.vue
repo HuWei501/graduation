@@ -3,9 +3,8 @@
     <div class="btn-box">
       <a id="prev">上一页</a>
       <a id="next">下一页</a>
-      <a v-on:click="showNum">显示页码</a>
-      <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
-      <router-link to="/index/study/applyforlearn" class="return">返回</router-link>
+      <span>Page : <span id="page_num"></span> / <span id="page_count"></span></span>
+      <a class="return" @click="returnDataList">返回</a>
     </div>
     <canvas id="the-canvas"></canvas>
   </div>
@@ -16,27 +15,67 @@ export default {
   name: 'myTrain',
   data () {
     return {
-      total: 0,
-      number: 0
+      dataMes: {},
+      startTime: new Date().getTime(),
+      learnedNum: 0
     }
   },
   mounted: function () {
+    var dataList = this.$store.state.datas
+    for (var i = 0; i < dataList.length; i++) {
+      if (dataList[i].gdataID === +window.location.search.split('&')[0].split('=')[1]) {
+        this.dataMes = dataList[i]
+      }
+    }
     this.show()
+    this.firstLearn()
   },
   methods: {
-    showNum: function () {
-      alert(this.number + '/' + this.total)
+    firstLearn () {
+      if (!this.dataMes.gstate) {
+        this.$http.post('http://localhost:3000/startLearnData', {
+          guserid: this.$store.state.loginMes.gid,
+          gdataid: this.dataMes.gdataID
+        }).then((res) => {
+          console.log(res.data)
+        }, (res) => {
+          console.log(res)
+        })
+      }
+    },
+    returnDataList () {
+      this.savePageAndTime()
+      if (+window.location.search.split('&')[1].split('=')[1]) {
+        this.$router.push('/index/study/learnsummarize')
+      } else {
+        this.$router.push('/index/study/applyforlearn')
+      }
+    },
+    savePageAndTime () {
+      var learningtime = Math.ceil(((new Date().getTime()) - this.startTime) / 1000)
+      this.startTime = new Date().getTime()
+      this.$http.post('http://localhost:3000/updatePageTime', {
+        learnedpage: this.learnedNum,
+        learntime: learningtime,
+        guserid: this.$store.state.loginMes.gid,
+        gdataid: this.dataMes.gdataID
+      }).then((res) => {
+        console.log(res.data)
+      }, (res) => {
+        console.log(res)
+      })
     },
     show: function () {
-      var $this = this
-      var url = '/static/' + window.location.search.split('&')[1].split('=')[1]
-      window.PDFJS.workerSrc = '/static/pdf.worker.js'
+      var url = 'http://localhost:3000/pdf/' + this.dataMes.gPDFurl
+      window.PDFJS.workerSrc = 'static/pdf.worker.js'
       var pdfDoc = null
-      var pageNum = +window.location.search.split('&')[0].split('=')[1]
+      var pageNum = this.dataMes.glearnedpage ? this.dataMes.glearnedpage : 1
+      this.learnedNum = pageNum
       var pageRendering = false
       var pageNumPending = null
       var scale = 1.5
       var canvas = document.getElementById('the-canvas')
+      var $this = this
       function renderPage (num) {
         pageRendering = true
         // Using promise to fetch the page
@@ -65,7 +104,10 @@ export default {
 
         // Update page counters
         document.getElementById('page_num').textContent = pageNum
-        $this.number = $this.number > pageNum ? $this.number : pageNum
+        if (pageNum > $this.learnedNum) {
+          $this.learnedNum = pageNum
+        }
+        $this.savePageAndTime()
       }
 
       function queueRenderPage (num) {
@@ -97,7 +139,16 @@ export default {
       window.PDFJS.getDocument(url).then(function (pdfDoc_) {
         pdfDoc = pdfDoc_
         document.getElementById('page_count').textContent = pdfDoc.numPages
-        $this.total = pdfDoc.numPages
+        if ($this.dataMes.gpages !== pdfDoc.numPages) {
+          $this.$http.post('http://localhost:3000/changePDFPage', {
+            pages: pdfDoc.numPages,
+            gdataid: $this.dataMes.gdataID
+          }).then((res) => {
+            console.log(res.data)
+          }, (res) => {
+            console.log(res)
+          })
+        }
         renderPage(pageNum)
       })
     }

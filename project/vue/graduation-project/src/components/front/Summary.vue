@@ -1,53 +1,104 @@
 <template>
   <div id="sunmmary">
   	<div class="addnew">
-  		<slot></slot>
-  		<a class="btn btn-primary" v-on:click="showAddBox = !showAddBox">添加新评价</a>
+  		<a class="btn btn-default" v-if="fromlist" @click="changeStaffListState(2)">返回</a>
+  		<a class="btn btn-primary" @click="showAddBox = !showAddBox">添加新评价</a>
   	</div>
   	<div class="addArea" v-if="showAddBox">
   		<div class="addContent">
   			<h5>请输入评价：</h5>
-  			<textarea></textarea>
+  			<textarea v-model="assessmentConent"></textarea>
   			<div class="btn-box">
-	  			<a class="btn btn-default" v-on:click="showAddBox = !showAddBox">关闭</a>
-	  			<a class="btn btn-primary">确认</a>
+	  			<a class="btn btn-default" @click="showAddBox = !showAddBox">关闭</a>
+	  			<a class="btn btn-primary" v-if="!fromlist" @click="addAssessment">确认</a>
+	  			<a class="btn btn-primary" v-if="fromlist" @click="addBossAssessment">确认</a>
   			</div>
   		</div>
   	</div>
     <ul class="self-assessment">
 	    <h5 class="self_h5">自我评价</h5>
 	    <h5 class="boss_h5">BOSS评价</h5>
-    	<li>	
-	    	<p class="left_date">2016-04-05</p>
-	    	<p class="left_content">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</p>
-    	</li>
-    	<li>	
-	    	<p class="right_date">2016-04-05</p>
-	    	<p class="right_content">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</p>
-    	</li>
-    	<li>
-	    	<p class="left_date">2016-04-05</p>
-	    	<p class="left_content">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</p>
-    	</li>
-    	    	<li>	
-	    	<p class="right_date">2016-04-05</p>
-	    	<p class="right_content">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</p>
-    	</li>
-    	    	<li>	
-	    	<p class="right_date">2016-04-05</p>
-	    	<p class="right_content">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</p>
+    	<li v-for="item in assArr">	
+	    	<p class="left_date" v-bind:class="item.gtype ? 'left_date' : 'right_date'">{{item.gbuilddate}}</p>
+	    	<p class="left_content" v-bind:class="item.gtype ? 'left_content' : 'right_content'">{{item.gassessment}}</p>
     	</li>
     </ul>
   </div>
 </template>
 
 <script >
+import { mapActions } from 'vuex'
 export default {
   name: 'summary',
   data () {
     return {
-      showAddBox: false
+      showAddBox: false,
+      assessmentConent: '',
+      assArr: [],
+      userid: this.fuserid ? this.fuserid : this.$store.state.loginMes.gid
     }
+  },
+  props: ['fromlist', 'fuserid'],
+  methods: {
+    ...mapActions([
+      'changeStaffListState'
+    ]),
+    addAssessment () {
+      if (this.assessmentConent) {
+        this.$http.post('http://localhost:3000/newAssessment', {
+          gid: this.userid,
+          gassessment: this.assessmentConent
+        }).then((res) => {
+          console.log(res.data)
+          if (res.data.success) {
+            this.assessmentConent = ''
+            this.showAddBox = !this.showAddBox
+            this.getAssessmentArr()
+          } else {
+            alert(res.data.msg)
+          }
+        }, (res) => {
+          console.log(res)
+        })
+      } else {
+        alert('内容不能为空')
+      }
+    },
+    addBossAssessment () {
+      if (this.assessmentConent) {
+        this.$http.post('http://localhost:3000/newBossAssessment', {
+          gid: this.userid,
+          gassessment: this.assessmentConent
+        }).then((res) => {
+          console.log(res.data)
+          if (res.data.success) {
+            this.assessmentConent = ''
+            this.showAddBox = !this.showAddBox
+            this.getAssessmentArr()
+          } else {
+            alert(res.data.msg)
+          }
+        }, (res) => {
+          console.log(res)
+        })
+      } else {
+        alert('内容不能为空')
+      }
+    },
+    getAssessmentArr () {
+      this.$http.post('http://localhost:3000/getSummary', {guserid: this.userid})
+      .then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          this.assArr = res.data.summaryList
+        }
+      }, (res) => {
+        console.log(res)
+      })
+    }
+  },
+  created () {
+    this.getAssessmentArr()
   }
 }
 </script>

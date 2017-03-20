@@ -3,58 +3,133 @@
 		<div class="addArea" v-if="showAddBox">
 	  		<div class="addContent">
 	  			<h5>请输入新职位：</h5>
-	  			<input type="text" name="position">
+	  			<input type="text" name="position" v-model="addNewName" v-on:keyup.13="add_position">
 	  			<div class="btn-box">
-		  			<a class="btn btn-default" v-on:click="showAddBox = !showAddBox">取消</a>
-		  			<a class="btn btn-primary">确认</a>
+		  			<a class="btn btn-default" @click="showAddBox = !showAddBox">取消</a>
+		  			<a class="btn btn-primary" @click="add_position">确认</a>
 	  			</div>
 	  		</div>
 	  	</div>
-		<a class="btn btn-info" v-on:click="showAddBox = !showAddBox">添加</a>
-		<table class="table table-bordered table-hover">
-			<thead>
-				<tr>
-					<th>编号</th>
-					<th>职位</th>
-					<th>操作</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>1</td>
-					<td>Web前端</td>
-					<td><a class="btn btn-danger">删除</a></td>
-				</tr>
-			</tbody>
-		</table>
+	  	<delete-alter v-if="showDel">
+	  		<h5>确认删除该职位？</h5>
+		    <a class="btn btn-default" @click="showDel = !showDel">取消</a>
+	  		<a class="btn btn-danger" @click="deletePositon">删除</a>
+	  	</delete-alter>
+	  	<recommend-list v-if="showRecommend" :positionid="pid">
+	  		<a class="btn btn-default" @click="showRecommend = !showRecommend">返回</a>
+	  	</recommend-list>
+	  	<div v-if="!showRecommend">
+			<a class="btn btn-info" @click="showAddBox = !showAddBox">添加职位</a>
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th>编号</th>
+						<th>职位</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="item in positionList">
+						<td>{{item.id}}</td>
+						<td>{{item.name}}</td>
+						<td>
+							<a class="btn btn-primary" @click="addRecommend(item.id)">添加推荐</a>
+							<a class="btn btn-danger" @click="deleteID=item.id;showDel=!showDel">删除</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+	  	</div>
 	</div>
 </template>
 
 <script>
+import deleteAlter from '../common/deleteAlter'
+import recommend from './RecommendList'
 export default {
   data () {
     return {
-      showAddBox: false
+      showAddBox: false,
+      showDel: false,
+      addNewName: '',
+      positionList: [],
+      deleteID: 0,
+      showRecommend: false,
+      pid: null
     }
+  },
+  methods: {
+    add_position () {
+      this.$http.post('http://localhost:3000/new_position', {
+        gpositionname: this.addNewName
+      }).then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          this.showAddBox = !this.showAddBox
+          this.addNewName = ''
+          this.getPositionList()
+        } else {
+          alert(res.data.msg)
+        }
+      }, (res) => {
+        console.log(res)
+      })
+    },
+    getPositionList () {
+      this.$http.get('http://localhost:3000/get_allposition')
+      .then((res) => {
+        console.log(res.data)
+        this.positionList = res.data.position
+      }, (res) => {
+        console.log(res)
+      })
+    },
+    deletePositon () {
+      this.$http.post('http://localhost:3000/delete_position', {
+        gid: this.deleteID
+      }).then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          this.showDel = !this.showDel
+          this.getPositionList()
+        }
+      }, (res) => {
+        console.log(res)
+      })
+    },
+    addRecommend (positionid) {
+      this.pid = positionid
+      this.showRecommend = !this.showRecommend
+    }
+  },
+  components: {
+    'delete-alter': deleteAlter,
+    'recommend-list': recommend
+  },
+  created () {
+    this.getPositionList()
   }
 }
 </script>
 
 <style scoped>
 .btn{
-	width: 150px;
+	width: 100px;
 }
 .btn-info{
 	margin: 60px 60px 20px;
 }
 .table{
 	margin: 0 60px;
-	width: 50%;
+	width: 60%;
 }
-.table th:last-child,
-.table td:last-child{
-	width: 250px;
+.table th:last-child{
 	text-align: center;
+	width: 300px;
+}
+.table td:last-child{
+	display: flex;
+	justify-content: space-around;
 }
 .addArea{
 	position: fixed;

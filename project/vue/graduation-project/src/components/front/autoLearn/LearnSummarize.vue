@@ -8,18 +8,18 @@
                 </div>
                 <div class="circle"></div>
                 <ul class="courseIn">
-                    <li v-for="course in item.msg">
+                    <li v-for="course in item.obj">
                         <a class="courseImg fl">
-                            <img v-bind:src="course.imgurl" alt="class">
+                            <img v-bind:src="'http://localhost:3000/' + course.gimgurl" alt="class">
                         </a>
                         <div class="courseContent fl">
-                            <h3>{{course.name}}</h3>
+                            <h3>{{course.gtitle}}</h3>
                             <p>
-                                <span class="percent">已学<b>{{Math.floor(course.now/course.total*1000)/10}}%</b></span>
-                                <span class="page">学习至第<b>{{course.now}}</b>页</span>
-                                <span class="useTime">用时<b>{{course.time}}</b>分</span>
+                                <span class="percent">已学<b>{{Math.floor(course.glearnedpage/course.gpages*1000)/10}}%</b></span>
+                                <span class="page">学习至第<b>{{course.glearnedpage}}</b>页</span>
+                                <span class="useTime">用时<b>{{Math.floor(course.glearntime/60)}}</b>分</span>
                             </p>
-                            <a class="btn btn-success continueStudy">继续学习</a>
+                            <a class="btn btn-success continueStudy" @click="continueStudy(course.gdataID)">继续学习</a>
                         </div>
                         <div style="clear: both"></div>
                     </li>
@@ -34,43 +34,24 @@ export default {
   name: 'learnsummarize',
   data () {
     return {
-      courselists: [
-        {
-          date: '2016-01-02',
-          msg: [
-            {
-              id: 1,
-              name: 'Web前端',
-              now: 5,
-              total: 102,
-              time: 20,
-              imgurl: 'http://localhost:8080/static/cousebackgournd.jpg'
-            },
-            {
-              id: 2,
-              name: 'JAVA后台',
-              now: 21,
-              total: 50,
-              time: 30,
-              imgurl: 'http://localhost:8080/static/cousebackgournd.jpg'
-            }
-          ]
-        },
-        {
-          date: '2017-01-02',
-          msg: [
-            {
-              id: 3,
-              name: 'Vue学习总结',
-              now: 5,
-              total: 102,
-              time: 20,
-              imgurl: 'http://localhost:8080/static/cousebackgournd.jpg'
-            }
-          ]
-        }
-      ]
+      courselists: []
     }
+  },
+  methods: {
+    continueStudy (dataid) {
+      this.$router.push('/pdf?dataid=' + dataid + '&state=1')
+    }
+  },
+  created () {
+    this.$http.post('http://localhost:3000/myDataList', {guserid: this.$store.state.loginMes.gid})
+    .then((res) => {
+      console.log(res.data)
+      if (res.data.success) {
+        this.courselists = res.data.dataList
+      }
+    }, (res) => {
+      console.log(res)
+    })
   }
 }
 </script>

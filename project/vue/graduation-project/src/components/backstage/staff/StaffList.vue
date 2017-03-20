@@ -1,27 +1,23 @@
 <template>
 	<div id="stafflist">
-		<change-mes v-if="showpage===2">
-			<div slot="top">	
-				<a class="btn btn-info" v-on:click="showpage = 3">培训详情</a>
-				<a class="btn btn-info" v-on:click="showpage = 4">自主学习详情</a>
-				<a class="btn btn-info" v-on:click="showpage = 5">总结</a>
-				<a class="btn btn-danger">重置密码</a>
-			</div>
-			<div slot="bottom">	
-				<a class="btn btn-default" v-on:click="showpage = 1">返回</a>
-				<a class="btn btn-primary">修改</a>
-			</div>
+		<change-mes v-if="$store.state.staffListState===2" :fromlist="true" :changeMes="changeStaffMes">
+			<p slot="account">{{ changeStaffMes.gaccount }}</p>
+			<label slot="btnbox">
+				<a class="btn btn-info" @click="changeStaffListState(3)">培训详情</a>
+				<a class="btn btn-info" @click="changeStaffListState(4)">自主学习详情</a>
+				<a class="btn btn-info" @click="changeStaffListState(5)">总结</a>
+			</label>
 		</change-mes>
-		<learn-detail v-if="showpage===3">
-			<a class="btn btn-default" v-on:click="showpage = 2">返回</a>
-		</learn-detail>
-		<auto-detail v-if="showpage===4">
-			<a class="btn btn-default" v-on:click="showpage = 2">返回</a>
-		</auto-detail>
-		<self-summary v-if="showpage===5">
-			<a class="btn btn-default" v-on:click="showpage =2">返回</a>
+		<learn-detail v-if="$store.state.staffListState===3" :fromlist="true" :fuserid="changeStaffMes.gid"></learn-detail>
+		<auto-detail v-if="$store.state.staffListState===4" :fromlist="true"></auto-detail>
+		<self-summary v-if="$store.state.staffListState===5" :fromlist="true" :fuserid="changeStaffMes.gid">
 		</self-summary>
-		<table class="table table-bordered table-hover" v-if="showpage===1">
+		<delete-staff v-if="delState">
+			<h5>确认删除该员工？</h5>
+			<a class="btn btn-default" @click="delState=!delState">取消</a>
+			<a class="btn btn-danger" @click="delstaff">删除</a>
+		</delete-staff>
+		<table class="table table-bordered table-hover" v-if="$store.state.staffListState === 1">
 			<thead>
 				<tr>
 					<th>员工编号</th>
@@ -34,16 +30,16 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td>1</td>
-					<td>胡伟</td>
-					<td>男</td>
-					<td>15068232038</td>
-					<td>WEB前端开发</td>
-					<td>595256187@qq.com</td>
+				<tr v-for="item in userList">
+					<td>{{item.gid}}</td>
+					<td>{{item.gname}}</td>
+					<td>{{item.gsex === 1 ? '男' : '女'}}</td>
+					<td>{{item.gtel}}</td>
+					<td>{{item.gpositionname}}</td>
+					<td>{{item.gemail}}</td>
 					<td>
-						<a class="btn btn-info" v-on:click="showpage = 2">详情</a>
-						<a class="btn btn-danger">删除</a>
+						<a class="btn btn-info" @click="changeStaffListState(2);changeStaffMes=item">详情</a>
+						<a class="btn btn-danger" @click="delState=!delState;delstaffid=item.gid">删除</a>
 					</td>
 				</tr>
 			</tbody>
@@ -56,17 +52,53 @@ import newstaff from './NewStaff'
 import learndetail from '../../front/trainTogether/MyTrain'
 import autodetail from './AutoDetail'
 import summary from '../../front/Summary.vue'
+import deleteStaff from '../../common/deleteAlter'
+import { mapActions } from 'vuex'
 export default {
   data () {
     return {
-      showpage: 1
+      userList: [],
+      changeStaffMes: {},
+      delState: false,
+      delstaffid: 0
+    }
+  },
+  methods: {
+    ...mapActions([
+      'changeStaffListState'
+    ]),
+    delstaff () {
+      this.$http.post('http://localhost:3000/delete_user', {gid: this.delstaffid})
+      .then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          this.delState = !this.delState
+          this.getstafflist()
+        }
+      }, (res) => {
+        console.log(res)
+      })
+    },
+    getstafflist () {
+      this.$http.get('http://localhost:3000/get_allstaff')
+      .then((res) => {
+        console.log(res.data)
+        this.userList = res.data.stafflist
+      }, (res) => {
+        console.log(res)
+      })
     }
   },
   components: {
     'change-mes': newstaff,
     'learn-detail': learndetail,
     'auto-detail': autodetail,
-    'self-summary': summary
+    'self-summary': summary,
+    'delete-staff': deleteStaff
+  },
+  created () {
+    this.getstafflist()
+    this.changeStaffListState(1)
   }
 }
 </script>

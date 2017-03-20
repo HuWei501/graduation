@@ -3,7 +3,7 @@
 		<header>
 			<h2>企业培训管理系统</h2>
 			<div>
-				<p><span>{{ username }}</span>,欢迎您</p>
+				<p><span>{{ $store.state.loginMes.gname }}</span>,欢迎您</p>
 				<button class="btn btn-danger" v-on:click="loginOut">退出</button>
 			</div>
 		</header>
@@ -16,7 +16,6 @@ export default {
     return {
     }
   },
-  props: ['username'],
   methods: {
     loginOut: function (event) {
       window.location.href = '/'

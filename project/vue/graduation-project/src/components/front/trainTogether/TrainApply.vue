@@ -6,17 +6,20 @@
           <th>课程编号</th>
           <th>课程</th>
           <th>学时</th>
-          <th>上课时间</th>
+          <th>课程开始时间</th>
+          <th>课程结束日期</th>
           <th>地点</th>
           <th>老师</th>
-          <th>课程开始时间</th>
+          <th>上课时间</th>
+          <th>限制人数</th>
+          <th>当前报名</th>
           <th>操作</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="item in applyCourse">
           <td v-for="object in item">{{object}}</td>
-          <td><a class="btn btn-info" v-on:click="signup(item.id)">报名</a></td>
+          <td><a class="btn btn-info" @click="courseApply(item.gcourseid)">报名</a></td>
         </tr>
       </tbody>
     </table>
@@ -28,36 +31,41 @@ export default {
   name: 'trainApply',
   data () {
     return {
-      applyCourse: trainMes1
+      applyCourse: [],
+      userid: this.$store.state.loginMes.gid
     }
   },
   methods: {
-    signup: function (id) {
-      alert('报名成功' + id)
+    getCourseList () {
+      this.$http.post('http://localhost:3000/selectApplyCourse', {gid: this.userid})
+      .then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          this.applyCourse = res.data.courseList
+        }
+      }, (res) => {
+        console.log(res)
+      })
+    },
+    courseApply (courseid) {
+      this.$http.post('http://localhost:3000/courseApply', {gid: this.userid, gcourseid: courseid})
+      .then((res) => {
+        console.log(res.data)
+        if (res.data.success) {
+          alert(res.data.msg)
+          this.getCourseList()
+        } else {
+          alert(res.data.msg)
+        }
+      }, (res) => {
+        console.log(res)
+      })
     }
+  },
+  created () {
+    this.getCourseList()
   }
 }
-
-var trainMes1 = [
-  {
-    id: 100007,
-    className: 'WEB前端',
-    period: 20,
-    time: '周三下午4点-6点',
-    adress: '求知楼102',
-    author: '小新',
-    startTime: '2016-03-04'
-  },
-  {
-    id: 100008,
-    className: 'Java基础教学',
-    period: 25,
-    time: '周一上午10点-11点',
-    adress: '求是楼302',
-    author: '七条香蕉',
-    startTime: '2016-03-04'
-  }
-]
 </script>
 
 <style scoped>
