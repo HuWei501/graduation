@@ -12,13 +12,13 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td>1</td>
-					<td>锋利的jQery</td>
-					<td>10%</td>
-					<td>20分钟</td>
-					<td>100页</td>
-					<td>2017-02-02</td>
+				<tr v-for="item in datalist">
+					<td>{{item.gdataID}}</td>
+					<td>{{item.gtitle}}</td>
+					<td>{{item.glearnedpage/item.gpages*100}}%</td>
+					<td>{{Math.floor(item.glearntime/60)}}分钟</td>
+					<td>{{item.gpages}}页</td>
+					<td>{{item.startdate}}</td>
 				</tr>
 			</tbody>
 		</table>
@@ -30,13 +30,31 @@
 import { mapActions } from 'vuex'
 export default {
   data () {
-    return {}
+    return {
+      arrlength: 0,
+      datalist: []
+    }
   },
-  props: ['fromlist'],
+  props: ['fromlist', 'fuserid'],
   methods: {
     ...mapActions([
       'changeStaffListState'
     ])
+  },
+  created () {
+    this.$http.post('http://localhost:3000/myDataList', {guserid: this.fuserid})
+    .then((res) => {
+      console.log(res.data)
+      for (var i = 0; i < res.data.dataList.length; i++) {
+        for (var j = 0; j < res.data.dataList[i].obj.length; j++) {
+          this.datalist.push(res.data.dataList[i].obj[j])
+          this.datalist[this.arrlength++].startdate = res.data.dataList[i].date
+        }
+      }
+      console.log(this.datalist)
+    }, (res) => {
+      console.log(res)
+    })
   }
 }
 </script>

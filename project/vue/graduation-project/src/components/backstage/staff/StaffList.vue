@@ -9,7 +9,7 @@
 			</label>
 		</change-mes>
 		<learn-detail v-if="$store.state.staffListState===3" :fromlist="true" :fuserid="changeStaffMes.gid"></learn-detail>
-		<auto-detail v-if="$store.state.staffListState===4" :fromlist="true"></auto-detail>
+		<auto-detail v-if="$store.state.staffListState===4" :fromlist="true" :fuserid="changeStaffMes.gid"></auto-detail>
 		<self-summary v-if="$store.state.staffListState===5" :fromlist="true" :fuserid="changeStaffMes.gid">
 		</self-summary>
 		<delete-staff v-if="delState">
