@@ -40,13 +40,14 @@
 export default {
   data () {
     return {
-      staffList: []
+      staffList: [],
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   props: ['fromCourseMes', 'fromdata'],
   methods: {
     selectApplyStaffList () {
-      this.$http.post('http://localhost:3000/applyStaffList', {gcourseid: this.fromCourseMes.courseid})
+      this.$http.post(this.houtai_url + 'applyStaffList', {gcourseid: this.fromCourseMes.courseid})
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {
@@ -60,7 +61,7 @@ export default {
       if (typeof grade !== 'number') {
         alert('请输入数字')
       } else {
-        this.$http.post('http://localhost:3000/changeStaffGrade', {
+        this.$http.post(this.houtai_url + 'changeStaffGrade', {
           grade: grade,
           guserid: userid,
           gcourseid: this.fromCourseMes.courseid
@@ -78,7 +79,7 @@ export default {
       }
     },
     selectLearnedStaff () {
-      this.$http.post('http://localhost:3000/learnedStaffList', {gdataid: this.fromCourseMes.dataid})
+      this.$http.post(this.houtai_url + 'learnedStaffList', {gdataid: this.fromCourseMes.dataid})
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {

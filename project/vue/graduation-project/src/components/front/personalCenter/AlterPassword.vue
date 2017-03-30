@@ -23,13 +23,14 @@ export default {
     return {
       oldpwd: '',
       newpwd: '',
-      affirmpwd: ''
+      affirmpwd: '',
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   methods: {
     changePassword () {
       if (this.newpwd === this.affirmpwd) {
-        this.$http.post('http://localhost:3000/change_password', {
+        this.$http.post(this.houtai_url + 'change_password', {
           gid: this.$store.state.loginMes.gid,
           gnewpwd: this.newpwd,
           goldpwd: this.oldpwd

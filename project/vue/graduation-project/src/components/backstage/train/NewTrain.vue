@@ -57,7 +57,8 @@ export default {
     return {
       myTrainMes: this.changeMes ? this.changeMes : {},
       maxPerson: this.changeMes ? this.changeMes.glimitperson : null,
-      period: this.changeMes ? this.changeMes.gperiod : null
+      period: this.changeMes ? this.changeMes.gperiod : null,
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   props: ['fromlist', 'changeMes'],
@@ -81,7 +82,7 @@ export default {
   },
   methods: {
     addnewcourse () {
-      this.$http.post('http://localhost:3000/new_course', this.myTrainMes)
+      this.$http.post(this.houtai_url + 'new_course', this.myTrainMes)
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {
@@ -92,7 +93,7 @@ export default {
       })
     },
     changeTrain () {
-      this.$http.post('http://localhost:3000/change_course', this.myTrainMes)
+      this.$http.post(this.houtai_url + 'change_course', this.myTrainMes)
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {

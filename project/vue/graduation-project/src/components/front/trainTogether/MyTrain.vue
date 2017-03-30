@@ -48,7 +48,8 @@ export default {
     return {
       trainMes: [],
       classState: 2,
-      userid: this.fuserid ? this.fuserid : this.$store.state.loginMes.gid
+      userid: this.fuserid ? this.fuserid : this.$store.state.loginMes.gid,
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   props: ['fromlist', 'fuserid'],
@@ -58,7 +59,7 @@ export default {
     ])
   },
   created () {
-    this.$http.post('http://localhost:3000/applyedCourse', {gid: this.userid})
+    this.$http.post(this.houtai_url + 'applyedCourse', {gid: this.userid})
     .then((res) => {
       console.log(res.data)
       if (res.data.success) {

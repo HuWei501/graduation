@@ -5,6 +5,7 @@ import router from '../router'
 Vue.use(Vuex)
 
 const state = {
+  ajaxUrl: 'http://locahost:3000/request/',
   loginMes: {},
   staffListState: 1,
   datas: []
@@ -24,7 +25,7 @@ const mutations = {
 
 const actions = {
   addPerson (context, obj) {
-    return Vue.http.post('http://localhost:3000/user_login', obj)
+    return Vue.http.post(state.ajaxUrl + 'user_login', obj)
     .then((res) => {
       console.log(res.data)
       if (res.data.success) {

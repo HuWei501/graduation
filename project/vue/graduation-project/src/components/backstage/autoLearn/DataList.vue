@@ -50,7 +50,8 @@ export default {
       deleteID: 0,
       changeDataMes: {},
       nowflag: false,
-      dataMes: {}
+      dataMes: {},
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   components: {
@@ -60,7 +61,7 @@ export default {
   },
   methods: {
     getDataList () {
-      this.$http.get('http://localhost:3000/get_allCourseData')
+      this.$http.get(this.houtai_url + 'get_allCourseData')
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {
@@ -71,7 +72,7 @@ export default {
       })
     },
     deleteData () {
-      this.$http.post('http://localhost:3000/delete_courseData', {gid: this.deleteID})
+      this.$http.post(this.houtai_url + 'delete_courseData', {gid: this.deleteID})
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {

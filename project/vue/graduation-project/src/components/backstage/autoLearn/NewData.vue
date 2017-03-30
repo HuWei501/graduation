@@ -36,7 +36,8 @@ export default {
   data () {
     return {
       myDataObj: this.changeMes ? this.changeMes : {},
-      pageNum: this.changeMes ? this.changeMes.gpages : null
+      pageNum: this.changeMes ? this.changeMes.gpages : null,
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   props: ['fromlist', 'changeMes'],
@@ -55,8 +56,7 @@ export default {
   },
   methods: {
     changeData () {
-      console.log(this.myDataObj)
-      this.$http.post('http://localhost:3000/change_courseData', this.myDataObj)
+      this.$http.post(this.houtai_url + 'change_courseData', this.myDataObj)
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {
@@ -67,7 +67,7 @@ export default {
       })
     },
     addNewData () {
-      this.$http.post('http://localhost:3000/new_courseData', this.myDataObj)
+      this.$http.post(this.houtai_url + 'new_courseData', this.myDataObj)
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {
@@ -85,7 +85,7 @@ export default {
         if (extension === '.jpg' || extension === '.png') {
           var data = new FormData()
           data.append('image', fileObeject.files[0])
-          this.$http.post('http://localhost:3000/image/upload', data)
+          this.$http.post(this.houtai_url + 'image/upload', data)
           .then((res) => {
             console.log(res.data)
             if (res.data.success) {
@@ -105,7 +105,7 @@ export default {
         var formData = new FormData()
         formData.append('file', pdfObeject.files[0])
         formData.append('name', pdfObeject.value)
-        this.$http.post('http://localhost:3000/pdf/uploading', formData)
+        this.$http.post(this.houtai_url + 'pdf/uploading', formData)
         .then((res) => {
           console.log(res.data)
           if (res.data.success) {

@@ -34,7 +34,8 @@ export default {
   name: 'learnsummarize',
   data () {
     return {
-      courselists: []
+      courselists: [],
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   methods: {
@@ -43,7 +44,7 @@ export default {
     }
   },
   created () {
-    this.$http.post('http://localhost:3000/myDataList', {guserid: this.$store.state.loginMes.gid})
+    this.$http.post(this.houtai_url + 'myDataList', {guserid: this.$store.state.loginMes.gid})
     .then((res) => {
       console.log(res.data)
       if (res.data.success) {

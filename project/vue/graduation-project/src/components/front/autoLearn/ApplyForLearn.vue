@@ -34,7 +34,8 @@ export default {
     return {
       selectAll: false,
       dataList: [],
-      userid: this.$store.state.loginMes.gid
+      userid: this.$store.state.loginMes.gid,
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   methods: {
@@ -50,7 +51,7 @@ export default {
       }
     },
     getAllDataList () {
-      this.$http.post('http://localhost:3000/selectDataList', {guserid: this.userid})
+      this.$http.post(this.houtai_url + 'selectDataList', {guserid: this.userid})
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {
@@ -62,7 +63,7 @@ export default {
       })
     },
     getRecommendDataList () {
-      this.$http.post('http://localhost:3000/recommendDataList', {
+      this.$http.post(this.houtai_url + 'recommendDataList', {
         guserid: this.userid,
         gpositionid: this.$store.state.loginMes.gpositionID
       }).then((res) => {

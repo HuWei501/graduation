@@ -60,7 +60,8 @@ export default {
       userList: [],
       changeStaffMes: {},
       delState: false,
-      delstaffid: 0
+      delstaffid: 0,
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   methods: {
@@ -68,7 +69,7 @@ export default {
       'changeStaffListState'
     ]),
     delstaff () {
-      this.$http.post('http://localhost:3000/delete_user', {gid: this.delstaffid})
+      this.$http.post(this.houtai_url + 'delete_user', {gid: this.delstaffid})
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {
@@ -80,7 +81,7 @@ export default {
       })
     },
     getstafflist () {
-      this.$http.get('http://localhost:3000/get_allstaff')
+      this.$http.get(this.houtai_url + 'get_allstaff')
       .then((res) => {
         console.log(res.data)
         this.userList = res.data.stafflist

@@ -32,7 +32,8 @@ export default {
   data () {
     return {
       arrlength: 0,
-      datalist: []
+      datalist: [],
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   props: ['fromlist', 'fuserid'],
@@ -42,7 +43,7 @@ export default {
     ])
   },
   created () {
-    this.$http.post('http://localhost:3000/myDataList', {guserid: this.fuserid})
+    this.$http.post(this.houtai_url + 'myDataList', {guserid: this.fuserid})
     .then((res) => {
       console.log(res.data)
       for (var i = 0; i < res.data.dataList.length; i++) {

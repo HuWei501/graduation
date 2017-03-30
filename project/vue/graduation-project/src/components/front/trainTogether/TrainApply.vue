@@ -32,12 +32,13 @@ export default {
   data () {
     return {
       applyCourse: [],
-      userid: this.$store.state.loginMes.gid
+      userid: this.$store.state.loginMes.gid,
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   methods: {
     getCourseList () {
-      this.$http.post('http://localhost:3000/selectApplyCourse', {gid: this.userid})
+      this.$http.post(this.houtai_url + 'selectApplyCourse', {gid: this.userid})
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {
@@ -48,7 +49,7 @@ export default {
       })
     },
     courseApply (courseid) {
-      this.$http.post('http://localhost:3000/courseApply', {gid: this.userid, gcourseid: courseid})
+      this.$http.post(this.houtai_url + 'courseApply', {gid: this.userid, gcourseid: courseid})
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {

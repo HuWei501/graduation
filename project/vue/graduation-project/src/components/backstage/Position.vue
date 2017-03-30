@@ -49,6 +49,7 @@ import recommend from './RecommendList'
 export default {
   data () {
     return {
+      houtai_url: this.$store.state.ajaxUrl,
       showAddBox: false,
       showDel: false,
       addNewName: '',
@@ -60,7 +61,7 @@ export default {
   },
   methods: {
     add_position () {
-      this.$http.post('http://localhost:3000/new_position', {
+      this.$http.post(this.houtai_url + 'new_position', {
         gpositionname: this.addNewName
       }).then((res) => {
         console.log(res.data)
@@ -76,7 +77,7 @@ export default {
       })
     },
     getPositionList () {
-      this.$http.get('http://localhost:3000/get_allposition')
+      this.$http.get(this.houtai_url + 'get_allposition')
       .then((res) => {
         console.log(res.data)
         this.positionList = res.data.position
@@ -85,7 +86,7 @@ export default {
       })
     },
     deletePositon () {
-      this.$http.post('http://localhost:3000/delete_position', {
+      this.$http.post(this.houtai_url + 'delete_position', {
         gid: this.deleteID
       }).then((res) => {
         console.log(res.data)

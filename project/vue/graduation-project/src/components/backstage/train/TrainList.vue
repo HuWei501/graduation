@@ -62,7 +62,8 @@ export default {
       deleteID: 0,
       changeTrainMes: {},
       nowflag: false,
-      courseMes: {}
+      courseMes: {},
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   components: {
@@ -72,7 +73,7 @@ export default {
   },
   methods: {
     getcourselist () {
-      this.$http.get('http://localhost:3000/get_allcourse')
+      this.$http.get(this.houtai_url + 'get_allcourse')
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {
@@ -83,7 +84,7 @@ export default {
       })
     },
     delTrain () {
-      this.$http.post('http://localhost:3000/delete_course', {gid: this.deleteID})
+      this.$http.post(this.houtai_url + 'delete_course', {gid: this.deleteID})
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {

@@ -35,7 +35,8 @@ export default {
       showAddBox: false,
       assessmentConent: '',
       assArr: [],
-      userid: this.fuserid ? this.fuserid : this.$store.state.loginMes.gid
+      userid: this.fuserid ? this.fuserid : this.$store.state.loginMes.gid,
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   props: ['fromlist', 'fuserid'],
@@ -45,7 +46,7 @@ export default {
     ]),
     addAssessment () {
       if (this.assessmentConent) {
-        this.$http.post('http://localhost:3000/newAssessment', {
+        this.$http.post(this.houtai_url + 'newAssessment', {
           gid: this.userid,
           gassessment: this.assessmentConent
         }).then((res) => {
@@ -66,7 +67,7 @@ export default {
     },
     addBossAssessment () {
       if (this.assessmentConent) {
-        this.$http.post('http://localhost:3000/newBossAssessment', {
+        this.$http.post(this.houtai_url + 'newBossAssessment', {
           gid: this.userid,
           gassessment: this.assessmentConent
         }).then((res) => {
@@ -86,7 +87,7 @@ export default {
       }
     },
     getAssessmentArr () {
-      this.$http.post('http://localhost:3000/getSummary', {guserid: this.userid})
+      this.$http.post(this.houtai_url + 'getSummary', {guserid: this.userid})
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {

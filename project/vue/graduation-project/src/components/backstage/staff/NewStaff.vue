@@ -95,7 +95,8 @@ export default {
   data () {
     return {
       positionList: [],
-      myChangeMes: this.changeMes ? this.changeMes : {}
+      myChangeMes: this.changeMes ? this.changeMes : {},
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   props: ['fromlist', 'changeMes'],
@@ -112,7 +113,7 @@ export default {
       'changeStaffListState'
     ]),
     addNewStaff () {
-      this.$http.post('http://localhost:3000/new_user', this.myChangeMes)
+      this.$http.post(this.houtai_url + 'new_user', this.myChangeMes)
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {
@@ -124,7 +125,7 @@ export default {
       })
     },
     postChangeMes () {
-      this.$http.post('http://localhost:3000/change_user', this.myChangeMes)
+      this.$http.post(this.houtai_url + 'change_user', this.myChangeMes)
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {
@@ -136,7 +137,7 @@ export default {
       })
     },
     resetPassword () {
-      this.$http.post('http://localhost:3000/reset_password', {
+      this.$http.post(this.houtai_url + 'reset_password', {
         gid: this.changeMes.gid
       }).then((res) => {
         alert(res.data.msg)
@@ -149,7 +150,7 @@ export default {
     }
   },
   created () {
-    this.$http.get('http://localhost:3000/get_allposition')
+    this.$http.get(this.houtai_url + 'get_allposition')
     .then((res) => {
       console.log(res.data)
       this.positionList = res.data.position

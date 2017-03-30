@@ -17,7 +17,8 @@ export default {
     return {
       dataMes: {},
       startTime: new Date().getTime(),
-      learnedNum: 0
+      learnedNum: 0,
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   mounted: function () {
@@ -33,7 +34,7 @@ export default {
   methods: {
     firstLearn () {
       if (!this.dataMes.gstate) {
-        this.$http.post('http://localhost:3000/startLearnData', {
+        this.$http.post(this.houtai_url + 'startLearnData', {
           guserid: this.$store.state.loginMes.gid,
           gdataid: this.dataMes.gdataID
         }).then((res) => {
@@ -54,7 +55,7 @@ export default {
     savePageAndTime () {
       var learningtime = Math.ceil(((new Date().getTime()) - this.startTime) / 1000)
       this.startTime = new Date().getTime()
-      this.$http.post('http://localhost:3000/updatePageTime', {
+      this.$http.post(this.houtai_url + 'updatePageTime', {
         learnedpage: this.learnedNum,
         learntime: learningtime,
         guserid: this.$store.state.loginMes.gid,
@@ -66,7 +67,7 @@ export default {
       })
     },
     show: function () {
-      var url = 'http://localhost:3000/pdf/' + this.dataMes.gPDFurl
+      var url = this.houtai_url + 'pdf/' + this.dataMes.gPDFurl
       window.PDFJS.workerSrc = 'static/pdf.worker.js'
       var pdfDoc = null
       var pageNum = this.dataMes.glearnedpage ? this.dataMes.glearnedpage : 1
@@ -140,7 +141,7 @@ export default {
         pdfDoc = pdfDoc_
         document.getElementById('page_count').textContent = pdfDoc.numPages
         if ($this.dataMes.gpages !== pdfDoc.numPages) {
-          $this.$http.post('http://localhost:3000/changePDFPage', {
+          $this.$http.post($this.houtai_url + 'changePDFPage', {
             pages: pdfDoc.numPages,
             gdataid: $this.dataMes.gdataID
           }).then((res) => {

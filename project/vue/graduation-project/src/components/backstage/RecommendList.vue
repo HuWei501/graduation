@@ -29,13 +29,14 @@
 export default {
   data () {
     return {
-      dataArr: []
+      dataArr: [],
+      houtai_url: this.$store.state.ajaxUrl
     }
   },
   props: ['positionid'],
   methods: {
     getDataList () {
-      this.$http.post('http://localhost:3000/selectAllDataList', {gpositionid: this.positionid})
+      this.$http.post(this.houtai_url + 'selectAllDataList', {gpositionid: this.positionid})
       .then((res) => {
         console.log(res.data)
         if (res.data.success) {
@@ -46,7 +47,7 @@ export default {
       })
     },
     addRecommend (dataid) {
-      this.$http.post('http://localhost:3000/addRecData', {
+      this.$http.post(this.houtai_url + 'addRecData', {
         gpositionid: this.positionid,
         gdataid: dataid
       }).then((res) => {
@@ -60,7 +61,7 @@ export default {
       })
     },
     removeData (dataid) {
-      this.$http.post('http://localhost:3000/removeRecommend', {
+      this.$http.post(this.houtai_url + 'removeRecommend', {
         gpositionid: this.positionid,
         gdataid: dataid
       }).then((res) => {
